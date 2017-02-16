@@ -35,7 +35,7 @@ import com.amazonaws.services.ec2.model.VpnConnectionOptionsSpecification;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.Scanner; 
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -180,7 +180,8 @@ public class AwsConsoleApp {
 			
 			if (cmd.hasOption("vi")) {
 				log.log(Level.INFO, "Using cli argument -vi=" + cmd.getOptionValue("vi"));
-
+				customerGatewayInfoPath = cmd.getOptionValue("vi");
+				
 			} else {
 				log.log(Level.SEVERE, "Missing vi option");
 				help();
@@ -195,9 +196,8 @@ public class AwsConsoleApp {
 		
         
         /*
-         * Amazon EC2
-         * The AWS EC2 client allows you to create, delete, and administer
-         * instances programmatically.
+         * Amazon VPC
+         * Create and delete VPN tunnel to customer VPN hardware
          */
         try {
 
@@ -216,8 +216,6 @@ public class AwsConsoleApp {
             
             Boolean staticRoutesOnly = true;
 
-            //Boolean exists = false;
-            //Boolean vpnConnExists = false;
             List<String> connectionIds = new ArrayList<String>();
             List<String> connectionIdList = new ArrayList<String>();
             
@@ -294,6 +292,25 @@ public class AwsConsoleApp {
             }
             else
             {
+            	boolean yn;
+            	Scanner scan = new Scanner(System.in);
+            	System.out.println("Enter yes or no to delete VPN connection: ");
+            	String input = scan.next();
+            	String answer = input.trim().toLowerCase();
+            	while (true) {
+            		  if (answer.equals("yes")) {
+            		    yn = true;
+            		    break;
+            		  } else if (answer.equals("no")) {
+            		    yn = false;
+            		    System.exit(0);
+            		  } else {
+            		     System.out.println("Sorry, I didn't catch that. Please answer yes/no");
+            		  }
+            		}
+            	
+            	
+            	
             	// Delete all existing VPN connections
             	System.out.println("Deleting AWS VPN connection(s)");
 
@@ -341,10 +358,12 @@ public class AwsConsoleApp {
         {
 	        for (VpnConnection vpnConns : descVPNres.getVpnConnections()) 
 	        {
-	        	connectionIds.add(vpnConns.getVpnConnectionId());
-	        	
-	        	String connectionID = vpnConns.getVpnConnectionId();
-	        	System.out.println("Found AWS VPN connection ID:" + connectionID);
+	        	if(!vpnConns.getState().toLowerCase().contains("deleted"))
+	        	{
+	        		connectionIds.add(vpnConns.getVpnConnectionId());
+	        		String connectionID = vpnConns.getVpnConnectionId();
+	        		System.out.println("Found AWS VPN connection ID:" + connectionID);
+	        	}
 	        }
         }
     	

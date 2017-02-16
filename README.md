@@ -11,3 +11,8 @@ Parameters
 -cgw cgw-c16e87a8
 -r 10.77.77.0/24,172.16.1.0/24,172.18.1.0/24,10.66.66.0/24,10.8.1.0/24
 -vi c:\\temp\\customerGatewayInfo.xml
+
+Example: 
+
+#!/bin/bash
+java -jar aws-site-to-site-vpn.jar -vt ipsec.1 -vgw vgw-eca54d85 -cgw cgw-c16e87a8 -r 10.77.77.0/24,172.16.1.0/24,172.18.1.0/24,10.66.66.0/24,10.8.1.0/24 -vi c:/temp/customerGatewayInfo.xml
